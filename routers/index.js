@@ -6,7 +6,7 @@ const indexRouter = express.Router();
  */
 
 indexRouter.get('/', function (req, res) {
-   res.send('首页')
+      res.send(path.join(__dirname,'public', 'index.html'));
 });
 
 

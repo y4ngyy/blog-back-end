@@ -11,29 +11,56 @@ const apiRouter = express.Router();
  * 3. 更新文章json
  */
 
-var postCache = null;
-apiRouter.get('/:postTitle', function (req, res) {
-    console.log(req.params.postTitle);
-    postTitle = req.params.postTitle;
-    if (postCache == null) {
-        postCache = JSON.parse(fs.readFileSync('postInfo.json').toString());
-        // console.log(postCache)
-    }
-    if (postCache[postTitle] != null) {
-        var postReadStream = fs.createReadStream(config.postDir + postCache[postTitle]["fileName"]);
-        var postData = '';
-        postReadStream.on('data', function (chunk) {
-            postData += chunk;
-        });
-        postReadStream.on('end', function () {
-            // console.log(postData);
-            res.send(markedModule(postData.toString()));
-        })
-    } else {
-        res.status(404);
-        res.send("文章不存在");
-    }
+var articleCache = null;
+// apiRouter.get('/:postTitle', function (req, res) {
+//     console.log(req.params.postTitle);
+//     postTitle = req.params.postTitle;
+//     if (postCache == null) {
+//         postCache = JSON.parse(fs.readFileSync('postInfo.json').toString());
+//         // console.log(postCache)
+//     }
+//     if (postCache[postTitle] != null) {
+//         var postReadStream = fs.createReadStream(config.postDir + postCache[postTitle]["fileName"]);
+//         var postData = '';
+//         postReadStream.on('data', function (chunk) {
+//             postData += chunk;
+//         });
+//         postReadStream.on('end', function () {
+//             // console.log(postData);
+//             res.send(markedModule(postData.toString()));
+//         })
+//     } else {
+//         res.status(404);
+//         res.send("文章不存在");
+//     }
+// });
+
+
+// for test
+
+apiRouter.get('/test', function (req, res) {
+    var stream = fs.createReadStream(config.postDir + 'docker学习.md');
+    var articleData = '';
+    stream.on('data', function (chunk) {
+        articleData += chunk;
+    });
+    stream.on('end', function () {
+        articleData = markedModule(articleData.toString());
+        if(articleData.indexOf("toc-true") !== -1 ) {
+            var h2Index= articleData.indexOf('</h2>');
+            articleData = articleData.substring(h2Index+6);
+        } else {
+            var pIndex = articleData.indexOf('</p>');
+            articleData = articleData.substring(pIndex+5);
+        }
+        var tempArticleData = articleData;
+        while(tempArticleData.length !== 1) {
+            var pStart = tempArticleData.
+        }
+        res.send(markedModule(articleData));
+    })
 });
+
 
 
 module.exports = apiRouter;
