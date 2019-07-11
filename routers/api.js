@@ -1,10 +1,10 @@
-const express = require('express')
+const express = require('express');
 const fs = require('fs');
-const markedModule = require('marked');
-
-const config = require('../configure/configure');
-const apiRouter = express.Router();
-
+const marked = require('marked');
+const cheerio = require('cheerio');
+const config = require('../config/config');
+const api = express.Router();
+const utils = require('../utils/utils');
 /**
  * 1. markdown解析
  * 2. 为前端提供markdown解析后的数据
@@ -12,55 +12,58 @@ const apiRouter = express.Router();
  */
 
 var articleCache = null;
-// apiRouter.get('/:postTitle', function (req, res) {
-//     console.log(req.params.postTitle);
-//     postTitle = req.params.postTitle;
-//     if (postCache == null) {
-//         postCache = JSON.parse(fs.readFileSync('postInfo.json').toString());
-//         // console.log(postCache)
-//     }
-//     if (postCache[postTitle] != null) {
-//         var postReadStream = fs.createReadStream(config.postDir + postCache[postTitle]["fileName"]);
-//         var postData = '';
-//         postReadStream.on('data', function (chunk) {
-//             postData += chunk;
-//         });
-//         postReadStream.on('end', function () {
-//             // console.log(postData);
-//             res.send(markedModule(postData.toString()));
-//         })
-//     } else {
-//         res.status(404);
-//         res.send("文章不存在");
-//     }
+api.get('/:postTitle', function (req, res) {
+    console.log(req.params.postTitle);
+    postTitle = req.params.postTitle;
+    if(articleCache == null) {
+        articleCache = JSON.parse(fs.readFileSync('articleData.json').toString());
+        // console.log(postCache)
+    }
+    if (articleCache[postTitle] != null) {
+        var articleReadStream = fs.createReadStream(config.postDir + [postTitle]["fileName"]);
+        var articleContent = '';
+        articleReadStream.on('data', function (chunk) {
+            articleContent += chunk;
+        });
+        articleReadStream.on('end', function () {
+            res.send(marked(articleContent.toString()));
+        })
+    } else {
+        res.status(404);
+        res.send("文章不存在");
+    }
+});
+
+api.get('/get-article-info', function (req, res) {
+    if (articleCache == null) {
+        var articleDataStream = fs.createReadStream('articleData.json');
+        var articleData ='';
+        articleDataStream.on('data', function (chunk) {
+            articleData += chunk;
+        });
+        articleDataStream.on('end', function () {
+            articleCache = JSON.parse(articleData.toString());
+            res.send(articleData.toString());
+        })
+    }
+    else {
+        res.send(JSON.stringify(articleCache));
+    }
+
+});
+// for test
+
+// api.get('/test', function (req, res) {
+//     var stream = fs.createReadStream(config.postDir + 'docker学习.md');
+//     var articleData = '';
+//     stream.on('data', function (chunk) {
+//         articleData += chunk;
+//     });
+//     stream.on('end', function () {
+//         res.send(utils.markdownParse(articleData));
+//     })
 // });
 
 
-// for test
 
-apiRouter.get('/test', function (req, res) {
-    var stream = fs.createReadStream(config.postDir + 'docker学习.md');
-    var articleData = '';
-    stream.on('data', function (chunk) {
-        articleData += chunk;
-    });
-    stream.on('end', function () {
-        articleData = markedModule(articleData.toString());
-        if(articleData.indexOf("toc-true") !== -1 ) {
-            var h2Index= articleData.indexOf('</h2>');
-            articleData = articleData.substring(h2Index+6);
-        } else {
-            var pIndex = articleData.indexOf('</p>');
-            articleData = articleData.substring(pIndex+5);
-        }
-        var tempArticleData = articleData;
-        while(tempArticleData.length !== 1) {
-            var pStart = tempArticleData.
-        }
-        res.send(markedModule(articleData));
-    })
-});
-
-
-
-module.exports = apiRouter;
+module.exports = api;
