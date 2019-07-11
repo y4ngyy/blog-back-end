@@ -20,38 +20,43 @@ function markdownParse(articleData) {
     });
     return $.html();
 }
+// var path = '../test/post/';
+// var dir = fs.readdirSync(path);
 
-var path = '../test/post/';
-var dir = fs.readdirSync(path);
-
-var articleInfoJson = {};
-dir.forEach(function (data, i) {
-    // console.log(data)
-    var content = fs.readFileSync(path + data).toString();
-    // console.log(content.toString())
-    var infoList = content.split('---')[1]
-        .replace(/\r\n/g, '\n')
-        .split('\n');
-    var title = infoList[1].split(' ')[1];
-    var date = infoList[2].split(' ')[1];
-    var categories = infoList[3].split(' ')[1];
-    articleInfoJson[title] = {};
-    articleInfoJson[title]['fileName'] = data;
-    articleInfoJson[title]['date'] = date;
-    articleInfoJson[title]['categories'] =categories;
-    var summary = markdownParse(content);
-    summary = summary.replace(/<\/?html>|<\/?head>|<\/?body>/g, '');
-    var summaryEnd = summary.indexOf('</pre>');
-    articleInfoJson[title]['summary'] = summary.substring(0, summaryEnd+6);
-});
-console.log(articleInfoJson);
-fs.writeFileSync('../articleData.json', JSON.stringify(articleInfoJson));
+// var articleInfoJson = {};
+// dir.forEach(function (data, i) {
+//     // console.log(data)
+//     var content = fs.readFileSync(path + data).toString();
+//     // console.log(content.toString())
+//     var infoList = content.split('---')[1]
+//         .replace(/\r\n/g, '\n')
+//         .split('\n');
+//     var arr = infoList[1].split(' ');
+//     arr.splice(0, 1);
+//     var title = arr.join(' ');
+//     console.log(title);
+//     var date = infoList[2].split(' ')[1];
+//     var categories = infoList[3].split(' ')[1];
+//     articleInfoJson[title] = {};
+//     articleInfoJson[title]['title'] = title;
+//     articleInfoJson[title]['fileName'] = data;
+//     articleInfoJson[title]['date'] = date;
+//     articleInfoJson[title]['categories'] =categories;
+//     var summary = markdownParse(content);
+//     summary = summary.replace(/<\/?html>|<\/?head>|<\/?body>/g, '');
+//     var summaryEnd = summary.indexOf('</pre>');
+//     if(summaryEnd === -1) {
+//         summaryEnd = summary.indexOf('</p>');
+//         articleInfoJson[title]['summary'] = summary.substring(0, summaryEnd+4);
+//     } else {
+//         articleInfoJson[title]['summary'] = summary.substring(0, summaryEnd + 6);
+//     }
+// });
+// console.log(articleInfoJson);
+// fs.writeFileSync('../articleData.json', JSON.stringify(articleInfoJson));
 // console.log(JSON.stringify(articleInfoJson));
-// var content = fs.readFileSync(path + 'git版本控制.md').toString();
-// var temp0 = content.split('---')[1];
-// var temp1 = temp0.replace(/\r\n/g,'\n');
-// var templist = temp1.split('\n');
-// var templist2 = templist[1].split(' ');
-// console.log(templist2);
-exports.getFileList = getFileList;
+
+
+
+
 exports.markdownParse = markdownParse;

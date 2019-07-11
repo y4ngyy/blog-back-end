@@ -12,21 +12,24 @@ const utils = require('../utils/utils');
  */
 
 var articleCache = null;
-api.get('/:postTitle', function (req, res) {
+api.get('/article/:postTitle', function (req, res) {
     console.log(req.params.postTitle);
     postTitle = req.params.postTitle;
     if(articleCache == null) {
         articleCache = JSON.parse(fs.readFileSync('articleData.json').toString());
-        // console.log(postCache)
     }
     if (articleCache[postTitle] != null) {
-        var articleReadStream = fs.createReadStream(config.postDir + [postTitle]["fileName"]);
+        var articleReadStream = fs.createReadStream(config.postDir + articleCache[postTitle]["fileName"]);
         var articleContent = '';
         articleReadStream.on('data', function (chunk) {
             articleContent += chunk;
         });
         articleReadStream.on('end', function () {
-            res.send(marked(articleContent.toString()));
+            var json = {}
+            json.title = postTitle;
+            json.date = articleCache[postTitle].date;
+            json.content = utils.markdownParse(articleContent.toString());
+            res.send(JSON.stringify(json));
         })
     } else {
         res.status(404);
