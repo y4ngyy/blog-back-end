@@ -1,10 +1,20 @@
 const express = require('express');
 const fs = require('fs');
-const marked = require('marked');
-const cheerio = require('cheerio');
 const config = require('../config/config');
 const api = express.Router();
 const utils = require('../utils/utils');
+const multer = require('multer');
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, config.postDir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
+var upload = multer({storage: storage});
 /**
  * 1. markdown解析
  * 2. 为前端提供markdown解析后的数据
@@ -53,6 +63,15 @@ api.get('/get-article-info', function (req, res) {
         res.send(JSON.stringify(articleCache));
     }
 
+});
+api.post('/admin-check', function (req, res) {
+
+});
+api.post('/upload',upload.single('file'), function (req, res) {
+    console.log(req.file);
+    var fileName = req.file.originalname;
+    articleCache = utils.addArticle(fileName);
+    res.send('上传成功');
 });
 // for test
 

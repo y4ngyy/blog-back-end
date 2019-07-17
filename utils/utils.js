@@ -20,6 +20,36 @@ function markdownParse(articleData) {
     });
     return $.html();
 }
+
+function addArticle(fileName) {
+    var content = fs.readFileSync(config.postDir+ fileName).toString();
+    var articleJson= JSON.parse(fs.readFileSync(config.articleInfo).toString());
+    var infoList = content.split('---')[1]
+    .replace(/\r\n/g, '\n')
+    .split('\n');
+    var arr = infoList[1].split(' ');
+    arr.splice(0, 1);
+    var title = arr.join(' ');
+    console.log(title);
+    var date = infoList[2].split(' ')[1];
+    var categories = infoList[3].split(' ')[1];
+    articleJson[title] = {};
+    articleJson[title]['title'] = title;
+    articleJson[title]['fileName'] = fileName;
+    articleJson[title]['date'] = date;
+    articleJson[title]['categories'] =categories;
+    var summary = markdownParse(content);
+    summary = summary.replace(/<\/?html>|<\/?head>|<\/?body>/g, '');
+    var summaryEnd = summary.indexOf('</pre>');
+    if(summaryEnd === -1) {
+        summaryEnd = summary.indexOf('</p>');
+        articleJson[title]['summary'] = summary.substring(0, summaryEnd+4);
+    } else {
+        articleJson[title]['summary'] = summary.substring(0, summaryEnd + 6);
+    }
+    fs.writeFileSync(config.articleInfo, JSON.stringify(articleJson));
+    return articleJson;
+}
 // var path = '../test/post/';
 // var dir = fs.readdirSync(path);
 
@@ -60,3 +90,4 @@ function markdownParse(articleData) {
 
 
 exports.markdownParse = markdownParse;
+exports.addArticle = addArticle;

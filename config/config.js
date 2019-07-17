@@ -1,7 +1,8 @@
 var config  = {
     "postDir": "./test/post/",
     "author": "y4ngyy",
-    "password": "12345678"
+    "password": "a66763065",
+    "articleInfo": "articleData.json"
 };
 
 module.exports = config;
