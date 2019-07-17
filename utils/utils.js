@@ -50,6 +50,8 @@ function addArticle(fileName) {
     fs.writeFileSync(config.articleInfo, JSON.stringify(articleJson));
     return articleJson;
 }
+
+
 // var path = '../test/post/';
 // var dir = fs.readdirSync(path);
 
