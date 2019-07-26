@@ -32,7 +32,7 @@ var upload = multer({storage: storage, fileFilter: function (req, file, cb) {
 
 var articleCache = null;
 api.get('/article/:postTitle', function (req, res) {
-    console.log(req.params.postTitle);
+    // console.log(req.params.postTitle);
     postTitle = req.params.postTitle;
     if(articleCache == null) {
         articleCache = JSON.parse(fs.readFileSync('articleData.json').toString());
@@ -74,7 +74,7 @@ api.get('/get-article-info', function (req, res) {
 });
 
 api.post('/admin-check', function (req, res) {
-    console.log(req.body);
+    // console.log(req.body);
     var userName = req.body.username;
     var password = req.body.password;
     if (userName === config.author && password === config.password) {
@@ -85,7 +85,7 @@ api.post('/admin-check', function (req, res) {
 });
 
 api.post('/upload',upload.single('file'), function (req, res) {
-    console.log(req.file);
+    // console.log(req.file);
     if (req.file.originalname !== undefined) {
         var fileName = req.file.originalname;
         articleCache = utils.addArticle(fileName);
